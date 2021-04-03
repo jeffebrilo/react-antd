@@ -65,6 +65,39 @@ function getNewTreeData(treeData, curKey, child, level) {
   setLeaf(treeData, curKey, level);
 }
 
+
+const children = async key => {
+  //    console.log('load data...');
+      return new Promise(resolve => {
+        fetch("https://2020.classictours.me/api.php", {
+          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ key: key }),
+        })
+        .then( 
+          (res) => {
+            return res.json(); 
+          }
+        )
+        .then(
+          (result) => {
+            resolve(result);
+          },
+          // Note: it's important to handle errors here
+          // instead of a catch() block so that we don't swallow
+          // exceptions from actual bugs in components.
+          (error) => {
+            console.log(error);
+          }
+        )
+        //}, 500);
+      });
+    };
+  
+
+
 class TreeDemo extends React.Component {
   state = {
     treeData: [],
@@ -87,13 +120,35 @@ class TreeDemo extends React.Component {
         checkedKeys: ['0-0'],
         expandedKeys: ['0-3'],
       });
-    }, 3000);
+    }, 1);
   }
   */
 
+  async componentDidMount() {
+
+    let test = await children(1);
+    console.log(test);
+
+    
+      this.setState({
+        treeData: test.tree0,
+        checkedKeys: ['0-0'],
+        expandedKeys: ['0-3'],
+      });
+    
+  }
+
+
+  /*
   componentDidMount() {
     
-    fetch("https://rc.blogs2day.net/api")
+    fetch("https://2020.classictours.me/api.php", {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ key: '1'}),
+    })
       .then( 
         (res) => {
           console.log(res);
@@ -104,7 +159,7 @@ class TreeDemo extends React.Component {
         (result) => {
           console.log(result);
           this.setState({
-            treeData: result,
+            treeData: result.tree,
             checkedKeys: ['0-0'],
             expandedKeys: ['0-3'],
           });
@@ -117,35 +172,40 @@ class TreeDemo extends React.Component {
         }
       )
   }
-
+  */
 
   onSelect = info => {
-    console.log('selected', info);
+    //console.log('selected', info);
   };
 
   onCheck = checkedKeys => {
-    console.log(checkedKeys);
+    //console.log(checkedKeys);
     this.setState({
       checkedKeys,
     });
   };
 
   onExpand = expandedKeys => {
-    console.log(expandedKeys);
+    //console.log(expandedKeys);
     this.setState({
       expandedKeys,
     });
   };
 
-  onLoadData = treeNode => {
-    console.log('load data...');
+  loadData = async treeNode => {
+    
+    let test = await children(treeNode.props.eventKey);
+    console.log(test);
+
     return new Promise(resolve => {
-      setTimeout(() => {
+      //setTimeout(() => {
         const treeData = [...this.state.treeData];
+//        const treeData = this.state.treeData;
+        //console.log(treeNode.props);
         getNewTreeData(treeData, treeNode.props.eventKey, generateTreeNodes(treeNode), 2);
         this.setState({ treeData });
         resolve();
-      }, 500);
+      //}, 500);
     });
   };
 
@@ -164,7 +224,7 @@ class TreeDemo extends React.Component {
           onExpand={this.onExpand}
           checkedKeys={this.state.checkedKeys}
           expandedKeys={this.state.expandedKeys}
-          loadData={this.onLoadData}
+          loadData={this.loadData}
           treeData={treeData}
         />
       </div>
