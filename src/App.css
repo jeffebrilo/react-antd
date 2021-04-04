@@ -61,3 +61,14 @@
 .site-layout .site-layout-background {
   background: #fff;
 }
+
+.ant-layout-sider:not(.ant-layout-sider-collapsed) {
+  flex-basis: 350px !important;
+  max-width: 350px !important;
+  min-width: 350px !important;
+}
+
+.rc-tree {
+
+  padding: 30px 10px;
+}

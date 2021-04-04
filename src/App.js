@@ -5,68 +5,13 @@ import { Layout, Menu } from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
 } from '@ant-design/icons';
 
 import Tree from 'rc-tree';
 
 const { Header, Sider, Content } = Layout;
 
-
-
-function generateTreeNodes(treeNode) {
-  const arr = [];
-  const key = treeNode.props.eventKey;
-  for (let i = 0; i < 3; i += 1) {
-    arr.push({ title: `leaf ${key}-${i}`, key: `${key}-${i}` });
-  }
-  return arr;
-}
-
-function setLeaf(treeData, curKey, level) {
-  const loopLeaf = (data, lev) => {
-    const l = lev - 1;
-    data.forEach(item => {
-      if (
-        item.key.length > curKey.length
-          ? item.key.indexOf(curKey) !== 0
-          : curKey.indexOf(item.key) !== 0
-      ) {
-        return;
-      }
-      if (item.children) {
-        loopLeaf(item.children, l);
-      } else if (l < 1) {
-        // eslint-disable-next-line no-param-reassign
-        item.isLeaf = true;
-      }
-    });
-  };
-  loopLeaf(treeData, level + 1);
-}
-
-function getNewTreeData(treeData, curKey, child, level) {
-  const loop = data => {
-    if (level < 1 || curKey.length - 3 > level * 2) return;
-    data.forEach(item => {
-      if (curKey.indexOf(item.key) === 0) {
-        if (item.children) {
-          loop(item.children);
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          item.children = child;
-        }
-      }
-    });
-  };
-  loop(treeData);
-  setLeaf(treeData, curKey, level);
-}
-
-
-const children = async key => {
+const fetchChildren = async key => {
   //    console.log('load data...');
       return new Promise(resolve => {
         fetch("https://2020.classictours.me/api.php", {
@@ -83,19 +28,24 @@ const children = async key => {
         )
         .then(
           (result) => {
-            resolve(result);
+            resolve(result.tree);
           },
-          // Note: it's important to handle errors here
-          // instead of a catch() block so that we don't swallow
-          // exceptions from actual bugs in components.
           (error) => {
             console.log(error);
           }
         )
         //}, 500);
       });
-    };
+};
   
+
+const setChildren = (treeData, key, children) => {
+  treeData.forEach(item => {
+    if (item.key == key) item.children = children;
+    else if (item.children) setChildren(item.children, key, children);
+  })
+
+}
 
 
 class TreeDemo extends React.Component {
@@ -104,75 +54,20 @@ class TreeDemo extends React.Component {
     checkedKeys: [],
   };
 
-  /*
-  componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        treeData: [
-          { title: 'pNode 01', key: '0-0' },
-          { title: 'pNode 02', key: '0-1' },
-          { title: 'pNode 03', key: '0-2', isLeaf: true },
-          { title: 'pNode 03', key: '0-3', children: [
-            { title: 'pNode 01', key: '0-3-0' },
-            { title: 'pNode 02', key: '0-3-1' }, ] 
-          },
-        ],
-        checkedKeys: ['0-0'],
-        expandedKeys: ['0-3'],
-      });
-    }, 1);
-  }
-  */
-
   async componentDidMount() {
 
-    let test = await children(1);
-    console.log(test);
+    let tree = await fetchChildren(1);
+    //console.log(test);
 
     
       this.setState({
-        treeData: test.tree0,
-        checkedKeys: ['0-0'],
-        expandedKeys: ['0-3'],
+        treeData: tree,
+        //checkedKeys: ['0-0'],
+        //expandedKeys: ['0-3'],
       });
     
   }
 
-
-  /*
-  componentDidMount() {
-    
-    fetch("https://2020.classictours.me/api.php", {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ key: '1'}),
-    })
-      .then( 
-        (res) => {
-          console.log(res);
-          return res.json() 
-        }
-      )
-      .then(
-        (result) => {
-          console.log(result);
-          this.setState({
-            treeData: result.tree,
-            checkedKeys: ['0-0'],
-            expandedKeys: ['0-3'],
-          });
-        },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        (error) => {
-          console.log(error);
-        }
-      )
-  }
-  */
 
   onSelect = info => {
     //console.log('selected', info);
@@ -194,15 +89,17 @@ class TreeDemo extends React.Component {
 
   loadData = async treeNode => {
     
-    let test = await children(treeNode.props.eventKey);
-    console.log(test);
+    let children = await fetchChildren(treeNode.props.eventKey);
+    //console.log(children);
 
     return new Promise(resolve => {
       //setTimeout(() => {
         const treeData = [...this.state.treeData];
 //        const treeData = this.state.treeData;
         //console.log(treeNode.props);
-        getNewTreeData(treeData, treeNode.props.eventKey, generateTreeNodes(treeNode), 2);
+        //getNewTreeData(treeData, treeNode.props.eventKey, generateTreeNodes(treeNode), 2);
+        console.log(children);
+        setChildren(treeData, treeNode.props.eventKey, children);
         this.setState({ treeData });
         resolve();
       //}, 500);
@@ -235,13 +132,13 @@ class TreeDemo extends React.Component {
 class SiderDemo extends React.Component {
   state = {
     collapsed: false,
-    margin: 200
+    margin: 350
   };
 
   toggle = () => {
     this.setState({
       collapsed: !this.state.collapsed,
-      margin: this.state.margin == 200 ? 80 : 200,
+      margin: this.state.margin == 350 ? 80 : 350,
     });
   };
 
@@ -257,6 +154,8 @@ class SiderDemo extends React.Component {
           <div className="logo" />
 
           <TreeDemo />
+          
+          {/* 
 
           <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
           
@@ -269,8 +168,10 @@ class SiderDemo extends React.Component {
             <Menu.Item key="3" icon={<UploadOutlined />}>
               nav 3
             </Menu.Item>
- 
+   
           </Menu>
+          */}
+          
         </Sider>
         <Layout className="site-layout" style={{ 
           marginLeft: this.state.margin,
