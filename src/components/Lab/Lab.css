@@ -1,0 +1,48 @@
+.tiles {
+    width: 300px;
+    height: 300px;
+}
+
+.tiles .row {
+    width: 100%;
+    height: 33%;
+}
+
+.tiles .tile {
+    /*display: inline-block;*/
+    float: left;
+    background: linear-gradient(135deg, rgb(170, 170, 170) 60%, rgb(66, 66, 66));
+    cursor: pointer;
+}
+
+.tiles .tile.initial {
+    background: linear-gradient(135deg, rgb(185, 174, 143) 60%, rgb(94, 79, 57));
+}
+
+.tiles .tile.checked {
+    background: linear-gradient(135deg, rgb(185, 143, 143) 60%, rgb(94, 57, 57));
+}
+
+.tiles.show .tile.current,
+.tiles .tile.checked.current {
+        background: linear-gradient(135deg, rgb(158, 185, 143) 60%, rgb(57, 94, 62));
+}
+
+.tiles.show .tile.current,
+.tiles .tile.checked {
+    -moz-box-shadow:    inset 0 0 10px #000000;
+    -webkit-box-shadow: inset 0 0 10px #000000;
+    box-shadow:         inset 0 0 10px #000000;
+
+}
+
+.moves {
+    width: 300px;
+
+}
+
+.move {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+}

@@ -69,9 +69,12 @@
 }
 
 .rc-tree {
-
   padding: 30px 10px;
 }
 
-/* lab */
-
+.ant-menu.ant-menu-dark .rc-tree, 
+.ant-menu-dark .ant-menu-sub .rc-tree, 
+.ant-menu.ant-menu-dark .rc-tree
+.ant-menu-sub .rc-tree {
+  color: rgba(0, 0, 0, 0.85);
+}

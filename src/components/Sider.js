@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
 //  Link,
@@ -10,7 +9,6 @@ import {
 
 import { Layout, Menu } from 'antd';
 import {
-  UserOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from '@ant-design/icons';
@@ -28,11 +26,11 @@ function MySider() {
 
   const toggle = () => {
     setCollapsed(!collapsed);
-    setMargin(margin == 350 ? 80 : 350);
+    setMargin(margin === 350 ? 80 : 350);
   };
   
   const go = (param) => {
-      console.log(param);
+      //console.log(param);
       history.push(param.key);
   } 
  
@@ -45,11 +43,11 @@ function MySider() {
         left: 0,
       }}>
         <div className="logo" />
-        <TreeDemo />      
         <Menu theme="dark" mode="inline" defaultSelectedKeys={[history.location.pathname]}>
             <Menu.Item key="/" path="/" onClick={go}>
               Home
-            </Menu.Item>                    
+            </Menu.Item>                     
+           <TreeDemo />      
             <Menu.Item key="/lab" path="/lab" /*icon={<UserOutlined />}*/ onClick={go}>
               Lab
             </Menu.Item>    

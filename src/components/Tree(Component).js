@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import Tree from 'rc-tree';
-
-
 
 const fetchChildren = async key => {
   //    console.log('load data...');
@@ -32,7 +30,7 @@ const fetchChildren = async key => {
  
 const setChildren = (tree, key, children) => {
     tree.forEach(item => {
-      if (item.key == key) item.children = children;
+      if (item.key === key) item.children = children;
       else if (item.children) setChildren(item.children, key, children);
     })
 }
